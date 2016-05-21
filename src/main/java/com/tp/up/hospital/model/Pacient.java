@@ -6,7 +6,8 @@ public class Pacient {
     private Integer dni;
     private String medicalAssurance;
 
-
+    public Pacient(Integer dni){this.dni = dni;}
+    
     public Pacient(String name, Integer dni, String medicalAssurance) {
         this.name = name;
         this.dni = dni;

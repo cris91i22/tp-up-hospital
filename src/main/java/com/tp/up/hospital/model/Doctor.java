@@ -1,15 +1,14 @@
 package com.tp.up.hospital.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Doctor {
 
     private Integer enrollment;
     private String name;
-    private List<Consultation> consultations;
+    private ArrayList<Consultation> consultations;
 
-
-    public Doctor(Integer enrollment, String name, List<Consultation> consultations) {
+    public Doctor(Integer enrollment, String name, ArrayList<Consultation> consultations) {
         this.enrollment = enrollment;
         this.name = name;
         this.consultations = consultations;
@@ -31,11 +30,11 @@ public class Doctor {
         this.name = name;
     }
 
-    public List<Consultation> getConsultations() {
+    public ArrayList<Consultation> getConsultations() {
         return consultations;
     }
 
-    public void setConsultations(List<Consultation> consultations) {
+    public void setConsultations(ArrayList<Consultation> consultations) {
         this.consultations = consultations;
     }
 }

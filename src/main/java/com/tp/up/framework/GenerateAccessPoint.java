@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class GenerateAccessPoint {
 
@@ -34,40 +35,48 @@ public class GenerateAccessPoint {
 
         Class<HospitalService> clazz = HospitalService.class;
 
+        ArrayList<String> methods = new ArrayList<String>();
+        
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(AccesMethod.class)) {
                 MethodGenerator mehthodGenerator = new MethodGenerator();
                 String stringMethod = mehthodGenerator.getStringClass(method);
-
-                // Prepare source somehow.
-                String classSource = generateClass(stringMethod);
-
-                // Save source in .java file.
-                File root = new File("/home/cmedina/workspace/Tp-Backend/src/main/java/com/tp/up");
-                File root2 = new File(root, "HospitalController.java");
-                BufferedWriter out = null;
-                root2.createNewFile();
-                out = new BufferedWriter(new FileWriter(root2));
-                out.write(classSource);
-                out.close();
-
-
-                //JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-                //compiler.run(null, null, null, root2.getPath());
-
-// Load and instantiate compiled class.
-                //URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root2.toURI().toURL() });
-                //Class<?> cls = Class.forName("com.framework.HospitalController", true, classLoader); // Should print "hello".
-                //Object instance = cls.newInstance(); // Should print "world".
-
-
-                //System.out.println(instance);
-
-
-                System.out.print("AESES");
+                methods.add(stringMethod);
             }
-
         }
+        
+        String allMethodsInOne = "";
+        
+        for (String method : methods) {
+        	allMethodsInOne = allMethodsInOne + "\n" + method;
+		}
+        
+     // Prepare source somehow.
+        String classSource = generateClass(allMethodsInOne);
+
+        // Save source in .java file.
+        File root = new File("/home/cmedina/workspace/Tp-Backend/src/main/java/com/tp/up");
+        File root2 = new File(root, "HospitalController.java");
+        BufferedWriter out = null;
+        root2.createNewFile();
+        out = new BufferedWriter(new FileWriter(root2));
+        out.write(classSource);
+        out.close();
+
+
+        //JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        //compiler.run(null, null, null, root2.getPath());
+
+//Load and instantiate compiled class.
+        //URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root2.toURI().toURL() });
+        //Class<?> cls = Class.forName("com.framework.HospitalController", true, classLoader); // Should print "hello".
+        //Object instance = cls.newInstance(); // Should print "world".
+
+
+        //System.out.println(instance);
+
+
+        System.out.print("AESES");
 
     }
 
@@ -77,6 +86,7 @@ public class GenerateAccessPoint {
                    "import com.tp.up.hospital.HospitalService;\n" +
                    "import javax.ws.rs.*;\n" +
                    "import javax.ws.rs.core.MediaType;\n" +
+                   "@Path(\"/service\")\n" +
                    "public class HospitalController {\n" +
                    stringMethod +
                    "}";

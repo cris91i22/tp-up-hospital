@@ -1,14 +1,14 @@
 package com.tp.up.hospital.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Hospital {
     private String name;
-    private List<Doctor> doctors;
-    private List<Consultation> consultations;
-    private List<Pacient> pacients;
+    private ArrayList<Doctor> doctors;
+    private ArrayList<Consultation> consultations;
+    private ArrayList<Pacient> pacients;
 
-    public Hospital(String name, List<Doctor> doctors, List<Consultation> consultations, List<Pacient> pacients) {
+    public Hospital(String name, ArrayList<Doctor> doctors, ArrayList<Consultation> consultations, ArrayList<Pacient> pacients) {
         this.name = name;
         this.doctors = doctors;
         this.consultations = consultations;
@@ -23,27 +23,27 @@ public class Hospital {
         this.name = name;
     }
 
-    public List<Doctor> getDoctors() {
+    public ArrayList<Doctor> getDoctors() {
         return doctors;
     }
 
-    public void setDoctors(List<Doctor> doctors) {
+    public void setDoctors(ArrayList<Doctor> doctors) {
         this.doctors = doctors;
     }
 
-    public List<Consultation> getConsultations() {
+    public ArrayList<Consultation> getConsultations() {
         return consultations;
     }
 
-    public void setConsultations(List<Consultation> consultations) {
+    public void setConsultations(ArrayList<Consultation> consultations) {
         this.consultations = consultations;
     }
 
-    public List<Pacient> getPacients() {
+    public ArrayList<Pacient> getPacients() {
         return pacients;
     }
 
-    public void setPacients(List<Pacient> pacients) {
+    public void setPacients(ArrayList<Pacient> pacients) {
         this.pacients = pacients;
     }
 }

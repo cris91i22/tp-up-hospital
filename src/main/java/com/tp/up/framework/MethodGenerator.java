@@ -30,32 +30,41 @@ public class MethodGenerator {
 
         String methodName = method.getName();
         String path = "";
-        String toCallMethodParams = "";
-
-        for (int i = 0; i < paramsTypes.size(); i++) {
-            path = path + "{" + "param" + i + "}/";
-            toCallMethodParams = toCallMethodParams + "param" + i + ",";
-        }
-        path = path.substring(0,path.length() - 1);
-        toCallMethodParams = toCallMethodParams.substring(0, toCallMethodParams.length() - 1);
-
-        path = "@Path(\"" + pathForMethod + "/" + path + "\")\n";
-
         String newMethod = "";
+        String toCallMethodParams = "";
+        
+        if (paramsTypes.size() > 0){
 
-        for (int i = 0; i < paramsTypes.size(); i++){
-            newMethod = newMethod + "@PathParam(\"param" + i + "\") "+ paramsTypes.get(i) + " param" + i + ", ";
+        	for (int i = 0; i < paramsTypes.size(); i++) {
+	            path = path + "{" + "param" + i + "}/";
+	            toCallMethodParams = toCallMethodParams + "param" + i + ",";
+	        }
+	        path = path.substring(0,path.length() - 1);
+	        toCallMethodParams = toCallMethodParams.substring(0, toCallMethodParams.length() - 1);
+	
+	        path = "@Path(\"" + pathForMethod + "/" + path + "\")\n";
+	
+	        for (int i = 0; i < paramsTypes.size(); i++){
+	            newMethod = newMethod + "@PathParam(\"param" + i + "\") "+ paramsTypes.get(i) + " param" + i + ", ";
+	        }
+	        newMethod = newMethod.substring(0, newMethod.length() - 2);
+        } else {
+        	path = "@Path(\"" + pathForMethod + "\")\n";
         }
-        newMethod = newMethod.substring(0, newMethod.length() - 2);
-
+        
         String methodReturnType = method.getReturnType().getName();
 
+        String returnOrNot = "";
+        if (methodReturnType != "void"){
+        	returnOrNot = "return ";
+        }
+        
         String meth = "    @"+type+"\n" +
                       "    " + path +
                       "    " + conumerOrProducer +
                       "    public " + methodReturnType + " " + methodName + "(" + newMethod + ") {\n" +
                       "        HospitalService c = new HospitalService();\n" +
-                      "        c."+methodName+"(" + toCallMethodParams +");\n" +
+                      "        "+returnOrNot+"c."+methodName+"(" + toCallMethodParams +");\n" +
                       "    }\n";
 
         return meth;
