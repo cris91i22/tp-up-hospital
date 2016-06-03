@@ -15,12 +15,15 @@ public class MethodGenerator {
         String pathForMethod = myAnnotation.path();
         String conumerOrProducer = "";
 
-        if (type.equals("POST")){
-            conumerOrProducer = "@Consumes(MediaType.APPLICATION_JSON)\n";
+        /*if (type.equals("POST")){
+            conumerOrProducer = "@Consumes(MediaType.APPLICATION_JSON)\n"; 
         } else if(type.equals("GET")) {
             conumerOrProducer = "@Produces(MediaType.APPLICATION_JSON)\n";
+        }*/
+        if (type.equals("POST") | type.equals("GET")){
+        	conumerOrProducer = "@Produces(MediaType.APPLICATION_JSON)\n";
         }
-
+        
         ArrayList<String> paramsTypes = new ArrayList<String>();
 
         for (Class<?> obj : method.getParameterTypes()) {
@@ -57,13 +60,14 @@ public class MethodGenerator {
         String returnOrNot = "";
         if (methodReturnType != "void"){
         	returnOrNot = "return ";
-        }
+        } else {
+        	conumerOrProducer = "";
+    	}
         
         String meth = "    @"+type+"\n" +
                       "    " + path +
                       "    " + conumerOrProducer +
                       "    public " + methodReturnType + " " + methodName + "(" + newMethod + ") {\n" +
-                      "        HospitalService c = new HospitalService();\n" +
                       "        "+returnOrNot+"c."+methodName+"(" + toCallMethodParams +");\n" +
                       "    }\n";
 
