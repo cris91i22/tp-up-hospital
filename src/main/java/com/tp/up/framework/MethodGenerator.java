@@ -3,11 +3,14 @@ package com.tp.up.framework;
 import com.tp.up.annotations.AccesMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+@SuppressWarnings("rawtypes")
 public class MethodGenerator {
 
-    public String getStringClass(Method method){
+    public String getStringMethod(Method method){
 
         Annotation annotation = method.getAnnotation(AccesMethod.class);
         AccesMethod myAnnotation = (AccesMethod) annotation;
@@ -57,6 +60,15 @@ public class MethodGenerator {
         
         String methodReturnType = method.getReturnType().getName();
 
+        if(method.getReturnType().equals(ArrayList.class)){
+        	Type returnType = method.getGenericReturnType();
+        	if(returnType instanceof ParameterizedType){
+        	    ParameterizedType tp = (ParameterizedType) returnType;
+				Class typeArgClass = (Class) tp.getActualTypeArguments()[0];
+        	    methodReturnType = "ArrayList<" + typeArgClass.getName() + ">";
+        	}
+        }
+        
         String returnOrNot = "";
         if (methodReturnType != "void"){
         	returnOrNot = "return ";

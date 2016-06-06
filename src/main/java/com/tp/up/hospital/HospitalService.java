@@ -84,16 +84,19 @@ public class HospitalService {
     	return nroConsulta;
     }
     
+    @AccesMethod(type = "GET", path = "/consultations")
+    public ArrayList<Consultation> getConsultations() {	
+    	return hospital.getConsultations();
+    }
+    
     @AccesMethod(type = "POST", path = "/atender")
-    public String atender(Integer codConsulta) {
+    public void atender(Integer codConsulta) {
     	Collections.shuffle(hospital.getDoctors());
 		for (Consultation con : hospital.getConsultations()) {
 			if (con.getCodeConsultation().equals(codConsulta) & !con.getFinished()){
 				hospital.getDoctors().get(0).getConsultations().add(modificaConsulta(con));
-				return "CONSULTA NRO " + codConsulta + " ATENDIDA";
 			}
 		}
-    	return "CONSULTA NO ATENDIDA";
     }
     	
     @AccesMethod(type = "POST", path = "/finalizar")
