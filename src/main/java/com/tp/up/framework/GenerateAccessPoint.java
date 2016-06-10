@@ -13,14 +13,20 @@ import com.tp.up.hospital.HospitalService;
 
 public class GenerateAccessPoint {
 
-    // LInKS PARA USAR
-    //  http://stackoverflow.com/questions/2946338/how-do-i-programmatically-compile-and-instantiate-a-java-class
-    // https://wink.apache.org/1.0/html/JAX-RS%20Getting%20Started.html
-
-    // FALTA CREAR EL PROXY
-
     public static void main(String [] args) throws IOException, MalformedURLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-
+    	String filePathName = "";
+    	String proxyPathName = "";
+    	String proxyPackageRoute = "";
+    	String modelProxyPackageRoute = "";
+    	if (args.length == 4){
+    		filePathName = args[0];
+    		proxyPathName = args[1];
+    		proxyPackageRoute = args[2];
+    		modelProxyPackageRoute = args[3];
+    	} else {
+    		throw new RuntimeException("File path name don't set...");
+    	}
+    	
         Class<HospitalService> clazz = HospitalService.class;
 
         ArrayList<String> methods = new ArrayList<String>();
@@ -32,7 +38,7 @@ public class GenerateAccessPoint {
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(AccesMethod.class)) {
                 String stringMethod = mehthodGenerator.getStringMethod(method);
-                String stringProxy = proxyGenerator.getProxyMethods(method);
+                String stringProxy = proxyGenerator.getProxyMethods(method, modelProxyPackageRoute);
                 methods.add(stringMethod);
                 proxyMethods.add(stringProxy);
             }
@@ -51,34 +57,26 @@ public class GenerateAccessPoint {
 		}
         
         String classSource = generateClass(allMethodsInOne);
-        String classProxy = generateProxyClass(allProxyMethodsInOne);
+        String classProxy = generateProxyClass(allProxyMethodsInOne, proxyPackageRoute);
 
         // Save source in .java file.
-        File root = new File("/home/cmedina/workspace/Tp-Backend/src/main/java/com/tp/up"); //Main argument agregarlo!!
-        File root2 = new File(root, "HospitalController.java");
-        File root3 = new File(root, "Proxy.java");
-        BufferedWriter out = null;
-        BufferedWriter out2 = null;
-        root2.createNewFile();
-        root3.createNewFile();
-        out = new BufferedWriter(new FileWriter(root2));
-        out2 = new BufferedWriter(new FileWriter(root3));
-        out.write(classSource);
-        out2.write(classProxy);
-        out.close();
-        out2.close();
-
-
-        //JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        //compiler.run(null, null, null, root2.getPath());
-
-        //Load and instantiate compiled class.
-        //URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root2.toURI().toURL() });
-        //Class<?> cls = Class.forName("com.framework.HospitalController", true, classLoader); // Should print "hello".
-        //Object instance = cls.newInstance(); // Should print "world".
-
-
-        //System.out.println(instance);
+        File root = new File(filePathName);
+        File proxyRoot = new File(proxyPathName);
+        
+        File controllerFile = new File(root, "HospitalController.java");
+        File proxyFile = new File(proxyRoot, "Proxy.java");
+        
+        controllerFile.createNewFile();
+        proxyFile.createNewFile();
+        
+        BufferedWriter controllerBuffer = new BufferedWriter(new FileWriter(controllerFile));
+        BufferedWriter proxyBuffer = new BufferedWriter(new FileWriter(proxyFile));
+        
+        controllerBuffer.write(classSource);
+        proxyBuffer.write(classProxy);
+        
+        controllerBuffer.close();
+        proxyBuffer.close();
     }
 
     public static String generateClass(String stringMethod){
@@ -96,8 +94,8 @@ public class GenerateAccessPoint {
                    "}";
     }
     
-    public static String generateProxyClass(String proxyMethods){
-    	return "package com.tp.up;\n" +
+    public static String generateProxyClass(String proxyMethods, String proxyRoute){
+    	return "package " + proxyRoute + ";\n" +
                 "\n" +
                 "import java.io.BufferedReader;\n"+
 				"import java.io.InputStreamReader;\n"+

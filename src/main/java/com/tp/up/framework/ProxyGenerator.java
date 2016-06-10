@@ -11,7 +11,7 @@ import com.tp.up.annotations.AccesMethod;
 @SuppressWarnings("rawtypes")
 public class ProxyGenerator {
 
-	public String getProxyMethods(Method method){
+	public String getProxyMethods(Method method, String modelProxyPackageRoute){
 		Annotation annotation = method.getAnnotation(AccesMethod.class);
         AccesMethod myAnnotation = (AccesMethod) annotation;
         String type = myAnnotation.type();
@@ -53,14 +53,18 @@ public class ProxyGenerator {
 	        methodParams = methodParams.substring(0, methodParams.length() - 2);
         }
         
-        String methodReturnType = method.getReturnType().getName();
-
+        String methodReturnType = method.getReturnType().getSimpleName();
+        String packageModel = "";
+		if (methodReturnType != "void" & methodReturnType != "Integer" | methodReturnType != "String"){
+			packageModel = modelProxyPackageRoute + ".";
+		}
+        
         if(method.getReturnType().equals(ArrayList.class)){
         	Type returnType = method.getGenericReturnType();
         	if(returnType instanceof ParameterizedType){
         	    ParameterizedType tp = (ParameterizedType) returnType;
 				Class typeArgClass = (Class) tp.getActualTypeArguments()[0];
-        	    methodReturnType = "ArrayList<" + typeArgClass.getName() + ">";
+        	    methodReturnType = "ArrayList<" + packageModel + typeArgClass.getSimpleName() + ">";
         	}
         }
         
