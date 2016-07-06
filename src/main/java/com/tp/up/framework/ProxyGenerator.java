@@ -18,24 +18,11 @@ public class ProxyGenerator {
         String pathForMethod = myAnnotation.path();
 		
         String url = "http://localhost:8080/service" + pathForMethod;
-        String client = "";
-        String headers = "";
         
-        if (type.equals("GET")){
-        	client = "HttpGet";
-        } else if(type.equals("POST")) {
-        	client = "HttpPost";
-        	headers = "request.addHeader(\"Content-Type\", \"application/json\");";
-        } else if(type.equals("DELETE")) {
-        	client = "HttpDelete";
-        }
+        String headers = getHeaders(type);
+        String client = getClientType(type);
         
-        ArrayList<String> paramsTypes = new ArrayList<String>();
-
-        for (Class<?> obj : method.getParameterTypes()) {
-            String paramType = obj.getName();
-            paramsTypes.add(paramType);
-        }
+        ArrayList<String> paramsTypes = getParamTypes(method);
 
         String methodName = method.getName();
         String path = "";
@@ -47,10 +34,7 @@ public class ProxyGenerator {
 	            path = path + " + \"/\" + " + "param" + i + ".toString()";
 	        }       
 	
-	        for (int i = 0; i < paramsTypes.size(); i++){
-	        	methodParams = methodParams + paramsTypes.get(i) + " param" + i + ", ";
-	        }
-	        methodParams = methodParams.substring(0, methodParams.length() - 2);
+	        methodParams = getMethodParams(paramsTypes, methodParams);
         }
         
         String methodReturnType = method.getReturnType().getSimpleName();
@@ -68,7 +52,54 @@ public class ProxyGenerator {
         	}
         }
         
-        String returnOrNot = "\n";
+        String returnOrNot = getReturn(methodReturnType);
+        
+        return getFinnalyMethod(url, headers, client, methodName, path,
+				methodParams, methodReturnType, returnOrNot);
+	}
+
+	private ArrayList<String> getParamTypes(Method method) {
+		ArrayList<String> paramsTypes = new ArrayList<String>();
+
+        for (Class<?> obj : method.getParameterTypes()) {
+            String paramType = obj.getName();
+            paramsTypes.add(paramType);
+        }
+		return paramsTypes;
+	}
+
+	private String getClientType(String type) {
+		String client = "";
+        if (type.equals("GET")){
+        	client = "HttpGet";
+        } else if(type.equals("POST")) {
+        	client = "HttpPost";
+        	
+        } else if(type.equals("DELETE")) {
+        	client = "HttpDelete";
+        }
+		return client;
+	}
+	
+	private String getHeaders(String type) {
+		String headers = "";
+        if (type.equals("POST")){
+        	headers = "request.addHeader(\"Content-Type\", \"application/json\");";
+        }
+		return headers;
+	}
+	
+	private String getMethodParams(ArrayList<String> paramsTypes,
+			String methodParams) {
+		for (int i = 0; i < paramsTypes.size(); i++){
+			methodParams = methodParams + paramsTypes.get(i) + " param" + i + ", ";
+		}
+		methodParams = methodParams.substring(0, methodParams.length() - 2);
+		return methodParams;
+	}
+
+	private String getReturn(String methodReturnType) {
+		String returnOrNot = "\n";
         if (methodReturnType != "void"){
         	returnOrNot = 	"		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));\n" +
         					"		StringBuffer result = new StringBuffer();\n" +
@@ -80,8 +111,13 @@ public class ProxyGenerator {
 		        			"		return myObjects;\n";
         	
         }
-        
-        String valid = 
+		return returnOrNot;
+	}
+	
+	private String getFinnalyMethod(String url, String headers, String client,
+			String methodName, String path, String methodParams,
+			String methodReturnType, String returnOrNot) {
+		String valid = 
         		"	public " + methodReturnType + " " + methodName + "(" + methodParams + ") throws Exception {\n" +
         		"		String url = \"" + url + "\"" + path + ";\n" +
         		"		HttpClient client = HttpClientBuilder.create().build();\n"+
@@ -94,5 +130,4 @@ public class ProxyGenerator {
         
 		return valid;
 	}
-	
 }

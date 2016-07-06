@@ -13,7 +13,7 @@ import com.tp.up.hospital.HospitalService;
 
 public class GenerateAccessPoint {
 
-    public static void main(String [] args) throws IOException, MalformedURLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public static void main(String [] args) {
     	String filePathName = "";
     	String proxyPathName = "";
     	String proxyPackageRoute = "";
@@ -44,22 +44,29 @@ public class GenerateAccessPoint {
             }
         }
         
-        String allMethodsInOne = "";
-        
-        for (String method : methods) {
-        	allMethodsInOne = allMethodsInOne + "\n" + method;
-		}
-        
-        String allProxyMethodsInOne = "";
-        
-        for (String method : proxyMethods) {
-        	allProxyMethodsInOne = allProxyMethodsInOne + "\n" + method;
-		}
+        String allMethodsInOne = generateMethodsInOne(methods);       
+        String allProxyMethodsInOne = generateMethodsInOne(proxyMethods);
         
         String classSource = generateClass(allMethodsInOne);
         String classProxy = generateProxyClass(allProxyMethodsInOne, proxyPackageRoute);
 
-        // Save source in .java file.
+        try {
+			generateFiles(filePathName, proxyPathName, classSource, classProxy);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    private static String generateMethodsInOne(ArrayList<String> methods){
+    	String allMethodsInOne = "";
+        for (String method : methods) {
+        	allMethodsInOne = allMethodsInOne + "\n" + method;
+		}
+        return allMethodsInOne;
+    }
+    
+    private static void generateFiles(String filePathName, String proxyPathName, String classSource, String classProxy) throws Exception{
+    	// Save source in .java file.
         File root = new File(filePathName);
         File proxyRoot = new File(proxyPathName);
         
